@@ -24,6 +24,7 @@ void main(List<String> arguments) {
   print(data);
   print('1. Rise or Fall \t2. HPC');
   String initMethod = stdin.readLineSync();
+  print('Enter accuracy factor, k');
   String initAccuracy = stdin.readLineSync();
   computeLevels(
       levelData: data, initAccuracy: initAccuracy, initMethod: initMethod);
