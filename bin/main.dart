@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:csv/csv.dart';
 
-import 'levelling.dart';
+import 'levelling/simple.dart';
 
 void main(List<String> arguments) {
   // reading file
