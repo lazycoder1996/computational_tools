@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-void computeLevels(
+List<List<dynamic>> computeLevels(
     {List<List<dynamic>> levelData, String initMethod, String initAccuracy}) {
   List<dynamic> headers = [];
   List backSight = [];
@@ -476,8 +476,8 @@ void computeLevels(
       dataHeadings.add("Remarks");
     }
   }
-  print('data heading is $dataHeadings');
   levelData[0] = dataHeadings;
   dataHeadings.add('Controls');
-  print('final data is $levelData');
+  print('result is is $levelData');
+  return levelData;
 }
