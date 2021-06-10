@@ -21,11 +21,27 @@ void main(List<String> arguments) {
 
   // converting string data to a list
   List<List<dynamic>> data = converter.convert(csvString);
-  print(data);
+
+  // choosing computation method
   print('1. Rise or Fall \t2. HPC');
   String initMethod = stdin.readLineSync();
   print('Enter accuracy factor, k');
   String initAccuracy = stdin.readLineSync();
-  computeLevels(
-      levelData: data, initAccuracy: initAccuracy, initMethod: initMethod);
+
+  // computing levels
+  List<List<dynamic>> processResult = computeLevels(
+      levelData: data,
+      initAccuracy: initAccuracy,
+      initMethod: initMethod == '1' ? 'Rise or Fall' : 'HPC');
+
+  // converting results to csv
+  var resultData = ListToCsvConverter(
+    fieldDelimiter: ',',
+    eol: '\r\n',
+  ).convert(processResult);
+
+  // saving file to
+  // Find a location to save the file and set the path below
+  File downloaded = File('C:/Users/muj/Desktop/MsFiles/result.csv');
+  downloaded.writeAsStringSync(resultData);
 }
