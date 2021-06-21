@@ -8,7 +8,7 @@ void main(List<String> arguments) {
   // reading file
 
   // NB: Please download the file from github, and set the file path below
-  File myCsv = File('C:/Users/muj/Desktop/MsFiles/withCh.csv');
+  File myCsv = File('C:/Users/muj/Desktop/MsFiles/simple_levelling.csv');
 
   // reading csv file and storing it as a string
   String csvString = myCsv.readAsStringSync();
