@@ -1,28 +1,28 @@
 import 'dart:math' as math;
 
-List<List<dynamic>> computeLevels(
+import '../function.dart';
+
+void simpleLevelling(
     {List<List<dynamic>> levelData, String initMethod, String initAccuracy}) {
-  List<dynamic> headers = [];
-  List backSight = [];
-  List controls = [];
-  List interSight = [];
-  List foreSight = [];
-  List remarks = [];
-  List chainages = [];
+  levelData = readFile('C:/Users/muj/Desktop/MsFiles/simple_levelling.csv');
+  var backSight = [];
+  var benchmark = [];
+  var interSight = [];
+  var foreSight = [];
   int k;
-  List<num> initialReducedLevels = [];
+  var initialReducedLevels = <num>[];
   int size;
-  List<num> heightDifferences = [0];
-  List<String> dataHeadings = [];
-  List adj = [0];
-  var numberOfnonZeroBacksight;
+  var heightDifferences = <num>[0];
+  var dataHeadings = <String>[];
+  var adj = <double>[0.0];
   var error;
-  List newBackSight = [];
+  var newBackSight = [];
   String arithmeticCheck;
   num allowableMisclose;
+  // ignore: unused_local_variable
   String condition;
   String misclose;
-  List<num> finalReducedLevels = [];
+  var finalReducedLevels = <num>[];
   num nonZeroBs = 0;
   num sumOfBs = 0;
   num sumOfRise = 0;
@@ -31,48 +31,50 @@ List<List<dynamic>> computeLevels(
   num sumOfHeights = 0;
   num diffBtnBsAndFs;
   num diffFirstRlAndLastRl;
-  List rise = [''];
-  List fall = [''];
+  // ignore: omit_local_variable_types
+  List<dynamic> rise = [''];
+  // ignore: omit_local_variable_types
+  List<dynamic> fall = [''];
   List heightCollimation;
-  List<List<dynamic>> errorData = [];
-  bool mySwitch = false;
-  bool computeSwitch = true;
+  var errorData = <List<dynamic>>[];
+  var mySwitch = false;
+  var computeSwitch = true;
   bool chainagesExist;
   bool statsPressed;
   // static File myCsvFile = new File(_fileName);
-  List<List<dynamic>> data = [];
+  var data = <List<dynamic>>[];
   num max = 0;
   num absMax;
   num absMin;
   num min;
   num a;
   num b;
-  int timesDownloaded = 0;
-  List fileNames = [];
-  String selectedComputation = initMethod;
+  var timesDownloaded = 0;
+  var fileNames = [];
+  var selectedComputation = initMethod;
   dynamic initialBmValue;
   dynamic finalBmValue;
   // putting appropriate data in columns
-  for (int i = 1; i < levelData.length; i++) {
+  for (var i = 1; i < levelData.length; i++) {
     backSight.add(levelData[i][0]);
     interSight.add(levelData[i][1]);
     foreSight.add(levelData[i][2]);
-    controls.add(levelData[i][4]);
+    benchmark.add(levelData[i][4]);
   }
   // getting initial bench mark
   try {
-    print(controls.first);
-    initialBmValue = controls.first;
+    print(benchmark.first);
+    initialBmValue = benchmark.first;
     initialReducedLevels.add(num.parse(initialBmValue.toString()));
   } catch (e) {
     initialBmValue = '';
   }
   size = backSight.length;
   num h;
-  int n = 0;
+  var n = 0;
   num reducedLevel;
   // Calculating rise or fall
-  if (initMethod == "Rise or Fall") {
+  if (initMethod == 'Rise or Fall') {
     selectedComputation = 'Rise and Fall';
     try {
       while (n <= size) {
@@ -165,12 +167,12 @@ List<List<dynamic>> computeLevels(
     }
   } catch (e) {}
   // calculating errors
-  if (num.tryParse(controls.last.toString()) != null) {
+  if (num.tryParse(benchmark.last.toString()) != null) {
     // nonZeroBs = 0;
     try {
       n = 0;
       error = double.parse(
-          ((initialReducedLevels.last) - (num.parse(controls.last.toString())))
+          ((initialReducedLevels.last) - (num.parse(benchmark.last.toString())))
               .toStringAsFixed(3));
       print('error is $error');
       // Counting non-null values in backsight
@@ -178,9 +180,9 @@ List<List<dynamic>> computeLevels(
 
     //Custom function to count non null backsights at a specified length
     num countNonZero(num n) {
-      int z = 0;
-      int nonZeroBackSightSpecified = 0;
-      List subBackSight = [];
+      var z = 0;
+      var nonZeroBackSightSpecified = 0;
+      var subBackSight = [];
       subBackSight = newBackSight.sublist(0, n + 1);
       try {
         while (z <= size) {
@@ -210,7 +212,7 @@ List<List<dynamic>> computeLevels(
   }
 
   // // Calculating for final reduced levels if final Bm value is not null
-  if (num.tryParse(controls.last.toString()) != null) {
+  if (num.tryParse(benchmark.last.toString()) != null) {
     num frl;
     n = 0;
     try {
@@ -227,7 +229,7 @@ List<List<dynamic>> computeLevels(
   // Arithmetic check
   try {
     // removing empty strings in foresights and backsights
-    List newBacksight = [];
+    var newBacksight = [];
     n = 0;
     try {
       while (n <= size) {
@@ -254,7 +256,7 @@ List<List<dynamic>> computeLevels(
 
     //Summing foresights
     try {
-      int a = 0;
+      var a = 0;
       while (a <= size) {
         if (foreSight[a] != '') {
           sumOfFs = sumOfFs + foreSight[a];
@@ -266,9 +268,9 @@ List<List<dynamic>> computeLevels(
     }
 
     //summing rises and falls
-    if (initMethod == "Rise or Fall") {
+    if (initMethod == 'Rise or Fall') {
       try {
-        int b = 0;
+        var b = 0;
         while (b <= size) {
           sumOfHeights = heightDifferences[b] + sumOfHeights;
           b++;
@@ -295,7 +297,7 @@ List<List<dynamic>> computeLevels(
       k = int.parse(initAccuracy);
       allowableMisclose =
           double.parse((k * math.sqrt(nonZeroBs)).toStringAsFixed(3));
-      if (num.tryParse(controls.last.toString()) != null) {
+      if (num.tryParse(benchmark.last.toString()) != null) {
         if (error.abs() <= allowableMisclose) {
           condition = '';
           misclose = 'accepted';
@@ -314,7 +316,7 @@ List<List<dynamic>> computeLevels(
 
   //Seperating rises and falls
   try {
-    List<num> newHeights = heightDifferences.sublist(1);
+    var newHeights = heightDifferences.sublist(1);
     var i;
     for (i in newHeights) {
       if (i >= 0) {
@@ -332,7 +334,7 @@ List<List<dynamic>> computeLevels(
   // Removing duplicates in HPC
   try {
     n = 1;
-    int x = 0;
+    var x = 0;
     while (n <= size) {
       if (heightCollimation[x] == heightCollimation[n]) {
         heightCollimation[n] = '';
@@ -357,9 +359,9 @@ List<List<dynamic>> computeLevels(
     }
   } catch (e) {}
 
-  int m = 0;
+  var m = 0;
 
-  if (initMethod == "Rise or Fall") {
+  if (initMethod == 'Rise or Fall') {
     m = 2;
   } else {
     m = 1;
@@ -369,9 +371,9 @@ List<List<dynamic>> computeLevels(
     n = 0;
     while (n < size) {
       // Adding adjustment and final reduced levels to table
-      if (num.tryParse(controls.last.toString()) != null) {
+      if (num.tryParse(benchmark.last.toString()) != null) {
         // Adding rise and fall columns to table
-        if (initMethod == "Rise or Fall") {
+        if (initMethod == 'Rise or Fall') {
           levelData[n + 1].insert(m + 1, rise[n]);
           levelData[n + 1].insert(m + 2, fall[n]);
         }
@@ -386,7 +388,7 @@ List<List<dynamic>> computeLevels(
       // Not adding adjustment and final reduced levels to table
       else {
         // Adding rise and fall columns to table
-        if (initMethod == "Rise or Fall") {
+        if (initMethod == 'Rise or Fall') {
           levelData[n + 1].insert(3, rise[n]);
           levelData[n + 1].insert(4, fall[n]);
         }
@@ -416,7 +418,7 @@ List<List<dynamic>> computeLevels(
 
   n = 4;
   // Rise and fall checks
-  if (initMethod == "Rise or Fall") {
+  if (initMethod == 'Rise or Fall') {
     errorData.add([' Sum of rise']);
     errorData[n + 1].add(' ' + sumOfRise.toStringAsFixed(3));
     errorData.add([' Sum of fall']);
@@ -425,7 +427,7 @@ List<List<dynamic>> computeLevels(
     errorData[n + 3].add(' ' + sumOfHeights.toStringAsFixed(3));
     errorData.add([' Arithmetic check']);
     errorData[n + 4].add(' $arithmeticCheck');
-    if (num.tryParse(controls.last.toString()) != null) {
+    if (num.tryParse(benchmark.last.toString()) != null) {
       errorData.add([' The allowable misclose']);
       errorData[n + 5].add(' $allowableMisclose');
       errorData.add([' The misclose calculated']);
@@ -436,7 +438,7 @@ List<List<dynamic>> computeLevels(
   else {
     errorData.add([' Arithmetic check']);
     errorData[n + 1].add(' $arithmeticCheck');
-    if (num.tryParse(controls.last.toString()) != null) {
+    if (num.tryParse(benchmark.last.toString()) != null) {
       errorData.add([' The allowable misclose']);
       errorData[n + 2].add(' $allowableMisclose');
       errorData.add([' The misclose calculated']);
@@ -445,39 +447,40 @@ List<List<dynamic>> computeLevels(
   }
 
   dataHeadings = [];
-  dataHeadings.add("Backsight");
-  dataHeadings.add("Intersight");
-  dataHeadings.add("Foresight");
+  dataHeadings.add('Backsight');
+  dataHeadings.add('Intersight');
+  dataHeadings.add('Foresight');
 
-  if (num.tryParse(controls.last.toString()) != null) {
-    if (initMethod == "Rise or Fall") {
-      dataHeadings.add("Rise");
-      dataHeadings.add("Fall");
-      dataHeadings.add("Initial Reduced Level");
-      dataHeadings.add("Adjustment");
-      dataHeadings.add("Final Reduced Level");
-      dataHeadings.add("Remarks");
+  if (num.tryParse(benchmark.last.toString()) != null) {
+    if (initMethod == 'Rise or Fall') {
+      dataHeadings.add('Rise');
+      dataHeadings.add('Fall');
+      dataHeadings.add('Initial Reduced Level');
+      dataHeadings.add('Adjustment');
+      dataHeadings.add('Final Reduced Level');
+      dataHeadings.add('Remarks');
     } else {
-      dataHeadings.add("Height of plane of collimation");
-      dataHeadings.add("Initial Reduced Level");
-      dataHeadings.add("Adjustment");
-      dataHeadings.add("Final Reduced Level");
-      dataHeadings.add("Remarks");
+      dataHeadings.add('Height of plane of collimation');
+      dataHeadings.add('Initial Reduced Level');
+      dataHeadings.add('Adjustment');
+      dataHeadings.add('Final Reduced Level');
+      dataHeadings.add('Remarks');
     }
   } else {
-    if (initMethod == "Rise or Fall") {
-      dataHeadings.add("Rise");
-      dataHeadings.add("Fall");
-      dataHeadings.add("Initial Reduced Level");
-      dataHeadings.add("Remarks");
+    if (initMethod == 'Rise or Fall') {
+      dataHeadings.add('Rise');
+      dataHeadings.add('Fall');
+      dataHeadings.add('Initial Reduced Level');
+      dataHeadings.add('Remarks');
     } else {
-      dataHeadings.add("Height of plane of collimation");
-      dataHeadings.add("Initial Reduced Level");
-      dataHeadings.add("Remarks");
+      dataHeadings.add('Height of plane of collimation');
+      dataHeadings.add('Initial Reduced Level');
+      dataHeadings.add('Remarks');
     }
   }
   levelData[0] = dataHeadings;
   dataHeadings.add('Controls');
   print('result is is $levelData');
-  return levelData;
+  downloadResult(
+      'C:/Users/muj/Desktop/MsFiles/simple_levelling_results.csv', levelData);
 }
