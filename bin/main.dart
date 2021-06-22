@@ -1,5 +1,5 @@
-import 'levelling/precise_levelling.dart';
+import 'traversing/loop_traverse.dart';
 
 void main(List<String> arguments) {
-  preciseLevelling();
+  loopTraverse();
 }
