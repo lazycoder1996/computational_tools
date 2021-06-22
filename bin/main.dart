@@ -1,5 +1,5 @@
-import 'levelling/simple_levelling.dart';
+import 'levelling/precise_levelling.dart';
 
 void main(List<String> arguments) {
-  simpleLevelling();
+  preciseLevelling();
 }
