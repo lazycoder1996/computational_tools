@@ -57,6 +57,7 @@ List computeIncludedAngles({List<dynamic> circleReadings}) {
       doubleIncludedAngles.add(angle);
       n += 2;
     }
+    // ignore: empty_catches
   } catch (e) {}
   n = 0;
   num meanAngle;
@@ -66,6 +67,7 @@ List computeIncludedAngles({List<dynamic> circleReadings}) {
       includedAngles.add(meanAngle / 2);
       n += 2;
     }
+    // ignore: empty_catches
   } catch (e) {}
   return includedAngles;
 }
