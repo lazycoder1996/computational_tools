@@ -1,6 +1,6 @@
 import '../function.dart';
 
-void preciseComputation() {
+void preciseLevelling() {
   var levelData =
       readFile('C:/Users/muj/Desktop/MsFiles/precise_levelling.csv');
   var headers = levelData[0].map((e) {
@@ -42,26 +42,28 @@ void preciseComputation() {
       levelData[i + 1].add(rise.toStringAsFixed(3));
       levelData[i].add('');
     }
+    // ignore: empty_catches
   } catch (d) {}
 
   double reducedLevel;
-  levelData[1].add(double.parse(levelData[1][benchmark].toString()));
   levelData[0].add('Reduced Level');
+  levelData[1].add(double.parse(levelData[1][benchmark + 1].toString()));
   try {
     for (var a = 2; a <= levelData.length; a = a + 2) {
       if (a == 2) {
         levelData[a + 1].add('');
-        reducedLevel = double.parse(levelData[a - 1][9].toString()) +
-            double.parse(levelData[a][8].toString());
+        reducedLevel = double.parse(levelData[a - 1][10].toString()) +
+            double.parse(levelData[a][9].toString());
         levelData[a].add(reducedLevel.toStringAsFixed(3));
       }
       if (a % 2 == 0 && a != 2) {
         if (a != levelData.length - 1) levelData[a + 1].add('');
-        reducedLevel = double.parse(levelData[a - 2][9].toString()) +
-            double.parse(levelData[a][8].toString());
+        reducedLevel = double.parse(levelData[a - 2][10].toString()) +
+            double.parse(levelData[a][9].toString());
         levelData[a].add(reducedLevel.toStringAsFixed(3));
       }
     }
+    // ignore: empty_catches
   } catch (e) {}
   downloadResult(
       'C:/Users/muj/Desktop/MsFiles/precise_levelling_result.csv', levelData);
