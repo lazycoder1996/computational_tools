@@ -4,7 +4,7 @@ import '../function.dart';
 
 void simpleLevelling() {
   var levelData = readFile('C:/Users/muj/Desktop/MsFiles/simple_levelling.csv');
-  var initMethod = 'Rise or Fall';
+  var initMethod = 'Height of Plane of Collimation';
   var initAccuracy = 2;
   var backSight = [];
   var benchmark = [];
