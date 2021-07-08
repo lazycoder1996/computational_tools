@@ -1,7 +1,23 @@
 import 'dart:io';
 import 'dart:math';
-
+import 'package:archive/archive_io.dart';
 import 'package:csv/csv.dart';
+
+// creating zip
+void createZip() {
+  final logDir = 'C:/Users/muj/Desktop/MsFiles/log';
+  final zipLocation = 'C:/Users/muj/Desktop/MsFiles/log.zip';
+
+  var encoder = ZipFileEncoder();
+  encoder.zipDirectory(Directory(logDir), filename: zipLocation);
+
+  // Manually create a zip of a directory and individual files.
+  encoder.create('C:/Users/muj/Desktop/MsFiles/log.zip');
+  encoder.addFile(
+      File('C:/Users/muj/Desktop/MsFiles/simple_levelling_results.csv'));
+
+  encoder.close();
+}
 
 // reading file
 List<List<dynamic>> readFile(String filePath) {
@@ -95,7 +111,7 @@ List<dynamic> adjustBearings({List<dynamic> initialBearings}) {
   var adjPerStation = <dynamic>[];
   var finalBearing = <dynamic>[];
   for (var i in initialBearings) {
-    adjPerStation.add(-adjustment * initialBearings.indexOf(i));
+    adjPerStation.add(-1 * adjustment * initialBearings.indexOf(i));
   }
   for (var i = 0; i < adjPerStation.length; i++) {
     finalBearing.add((initialBearings[i] + adjPerStation[i]) % 360);
@@ -104,74 +120,80 @@ List<dynamic> adjustBearings({List<dynamic> initialBearings}) {
 }
 
 // computing lat and dep
-List<List<dynamic>> computeLatDdep(
+List<List<dynamic>> computeDepLat(
     {List<dynamic> bearings, List<dynamic> distances}) {
-  var latDep = <List<dynamic>>[[], []];
+  var depLat = <List<num>>[[], []];
   try {
-    for (var i = 0; i < bearings.length; i++) {
-      latDep[0].add(distances[i] * cos(converter * bearings[i + 1]));
-      latDep[1].add(distances[i] * sin(converter * bearings[i + 1]));
+    for (var i = 0; i <= bearings.length; i++) {
+      depLat[0].add(num.parse(distances[i].toString()) *
+          sin(converter * num.parse(bearings[i].toString())));
+      depLat[1].add(num.parse(distances[i].toString()) *
+          cos(converter * num.parse(bearings[i].toString())));
     }
-  } catch (e) {}
-  return latDep;
+  } catch (e) {
+    print(e.toString());
+  }
+  return depLat;
 }
 
 // adjusting lat and dep
-List<List<dynamic>> adjustLatDep(
+List<List<dynamic>> adjustDepLat(
     {String adjustmentMethod,
-    List<List<dynamic>> initialLatDep,
+    List<List<dynamic>> initialDepLat,
     List<dynamic> distances}) {
-  var adjLat = <dynamic>[];
-  var adjDep = <dynamic>[];
-  var correctedLat = <dynamic>[];
-  var correctedDep = <dynamic>[];
+  var adjLat = <dynamic>[''];
+  var adjDep = <dynamic>[''];
+  var correctedLat = <dynamic>[''];
+  var correctedDep = <dynamic>[''];
 
   if (adjustmentMethod == 'Bowditch') {
     num sumLat = 0;
     num sumDistances = 0;
     num sumDep = 0;
-    for (var i in initialLatDep[0]) {
+    for (var i in initialDepLat[0].sublist(1)) {
       sumLat += i;
     }
-    for (var i in initialLatDep[1]) {
+    for (var i in initialDepLat[1].sublist(1)) {
       sumDep += i;
     }
-    for (var i in distances.sublist(0, distances.length - 1)) {
+    for (var i in distances.sublist(1)) {
       sumDistances += i;
     }
-    var n = 0;
-    var size = initialLatDep[0].length;
+    var n = 1;
+    var size = initialDepLat[0].length;
     try {
-      while (n < size - 1) {
-        adjLat.add((distances[n] / sumDistances) * -sumLat);
-        correctedLat.add(adjLat[n] + initialLatDep[0][n]);
+      while (n <= size) {
         adjDep.add((distances[n] / sumDistances) * -sumDep);
-        correctedDep.add(adjDep[n] + initialLatDep[1][n]);
+        correctedDep.add(adjDep[n] + initialDepLat[0][n]);
+        adjLat.add((distances[n] / sumDistances) * -sumLat);
+        correctedLat.add(adjLat[n] + initialDepLat[1][n]);
         n++;
       }
-      adjLat.add(0);
-      adjDep.add(0);
-      correctedLat.add(initialLatDep[0].last);
-      correctedDep.add(initialLatDep[1].last);
+      // adjLat.add(0);
+      // adjDep.add(0);
+      // correctedLat.add(initialLatDep[0].last);
+      // correctedDep.add(initialLatDep[1].last);
     } catch (e) {}
   } else {}
-  return [adjLat, correctedLat, adjDep, correctedDep];
+  return [adjDep, correctedDep, adjLat, correctedLat];
 }
 
 // computing northings and eastings
-List<List<dynamic>> computeNorthingsEastings(
-    {List<List<dynamic>> latDep, List<dynamic> controls}) {
-  var results = <List<dynamic>>[
+List<List<dynamic>> computeEastingNorthing(
+    {List<List<dynamic>> depLat, List<dynamic> controls}) {
+  var eastingNorthing = <List<dynamic>>[
     [controls[0]],
     [controls[1]]
   ];
   try {
-    for (var i = 0; i <= latDep[1].length; i++) {
-      results[0].add(results[0][i] + latDep[1][i]);
-      results[1].add(results[1][i] + latDep[3][i]);
+    for (var i = 1; i <= depLat[1].length; i++) {
+      eastingNorthing[0].add(eastingNorthing[0][i - 1] + depLat[1][i]);
+      eastingNorthing[1].add(eastingNorthing[1][i - 1] + depLat[3][i]);
     }
-  } catch (e) {}
-  return results;
+  } catch (e) {
+    print(e.toString());
+  }
+  return eastingNorthing;
 }
 
 // need functions
@@ -206,5 +228,5 @@ List forwardGeodetic(
 }
 
 num backBearing(num foreBearing) {
-  return foreBearing < 180 ? 180 + foreBearing : foreBearing - 180;
+  return foreBearing <= 180 ? 180 + foreBearing : foreBearing - 180;
 }
