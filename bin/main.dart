@@ -1,5 +1,5 @@
-import 'traversing/loop_traverse.dart';
+import 'traversing/link_traverse.dart';
 
 void main(List<String> arguments) {
-  loopTraverse();
+  linkTraverse(adjustBy: 'Transit');
 }
