@@ -126,7 +126,7 @@ List<List<dynamic>> adjustIncludedAnglesLink(
     expectedSumAngles.add(
         sumAngles - ((finalForwardBearing - initialBackBearing) + (i * 180)));
   }
-  var m = minimum(expectedSumAngles);
+  var m = minimum(expectedSumAngles.map((e) => e.abs()).toList());
   var finalM = expectedSumAngles.indexOf(m) + size - 1;
   var expectedSum = (finalForwardBearing - initialBackBearing) + (finalM * 180);
   var error = sumAngles - expectedSum;
