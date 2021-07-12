@@ -1,9 +1,7 @@
-import 'dart:math' as math;
-
 import '../function.dart';
 
 void linkTraverse({String adjustBy}) {
-  var traverseData = readFile('C:/Users/muj/Desktop/MsFiles/linkTraverse.csv');
+  var traverseData = readFile('C:/Users/muj/Desktop/MsFiles/link_traverse.csv');
   var dataSize = traverseData.length;
   var backsightData = [];
   var foresightData = [];
@@ -44,6 +42,8 @@ void linkTraverse({String adjustBy}) {
       num.parse(endFirstControl[1]),
       num.parse(endSecondControl[0]),
       num.parse(endSecondControl[1]));
+  print('final distance and bear is $finalDistBear');
+
   print('circle readings are $circleReadings');
   // calculating included angles
   var includedAngles = computeIncludedAngles(
@@ -79,7 +79,7 @@ void linkTraverse({String adjustBy}) {
 
   // adjust dep and lat
   var adjustedDepLat = adjustDepLat(
-      adjustmentMethod: 'Transit',
+      adjustmentMethod: adjustBy,
       checkControls: [
         secondControl[0],
         secondControl[1],
@@ -142,24 +142,25 @@ void linkTraverse({String adjustBy}) {
       output.insert(m + 1, [
         stationData[n],
         stationData[n + 1],
-        includedAngles[n],
-        adjustedIncludedAngles[0][n],
-        adjustedIncludedAngles[1][n],
+        deg2DMS(includedAngles[n]),
+        deg2DMS(adjustedIncludedAngles[0][n]),
+        deg2DMS(adjustedIncludedAngles[1][n]),
         distanceData[n],
-        initialBearings[n],
-        initDepLat[0][n],
-        adjustedDepLat[0][n],
-        adjustedDepLat[1][n],
-        initDepLat[1][n],
-        adjustedDepLat[2][n],
-        adjustedDepLat[3][n],
-        (finalCoordinates[0].sublist(1)[n]).toStringAsFixed(3),
-        (finalCoordinates[1].sublist(1)[n]).toStringAsFixed(3)
+        deg2DMS(initialBearings[n]),
+        (initDepLat[0][n]).toStringAsFixed(4),
+        (adjustedDepLat[0][n]).toStringAsFixed(4),
+        (adjustedDepLat[1][n]).toStringAsFixed(4),
+        (initDepLat[1][n]).toStringAsFixed(4),
+        (adjustedDepLat[2][n]).toStringAsFixed(4),
+        (adjustedDepLat[3][n]).toStringAsFixed(4),
+        (finalCoordinates[0].sublist(1)[n]).toStringAsFixed(4),
+        (finalCoordinates[1].sublist(1)[n]).toStringAsFixed(4)
       ]);
       n++;
       m++;
     }
   } catch (e) {}
   downloadResult(
-      'C:/Users/muj/Desktop/MsFiles/link_traverse_result.csv', output);
+      'C:/Users/muj/Desktop/COMP_FILES/link_traverse_${adjustBy}_result.csv',
+      output);
 }
