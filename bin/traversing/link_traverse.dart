@@ -44,17 +44,19 @@ void linkTraverse({String adjustBy}) {
       num.parse(endFirstControl[1]),
       num.parse(endSecondControl[0]),
       num.parse(endSecondControl[1]));
+  print('circle readings are $circleReadings');
   // calculating included angles
   var includedAngles = computeIncludedAngles(
     circleReadings: circleReadings,
   );
+  print('included angles are $includedAngles');
 
   // adjust included angles
   var adjustedIncludedAngles = adjustIncludedAnglesLink(
       includedAngles: includedAngles,
       finalForwardBearing: finalDistBear[1],
       initialBackBearing: backBearing(initDistBear[1]));
-
+  print('adjusted included angles are $adjustedIncludedAngles');
   // calculating initial bearings
   var initialBearings = computeBearings(
       includedAngles: adjustedIncludedAngles[1],
@@ -151,7 +153,7 @@ void linkTraverse({String adjustBy}) {
         initDepLat[1][n],
         adjustedDepLat[2][n],
         adjustedDepLat[3][n],
-        (finalCoordinates[0].sublist(1)[n]).toStringAsFixed(2),
+        (finalCoordinates[0].sublist(1)[n]).toStringAsFixed(3),
         (finalCoordinates[1].sublist(1)[n]).toStringAsFixed(3)
       ]);
       n++;
