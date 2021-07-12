@@ -1,6 +1,6 @@
 import '../function.dart';
 
-void loopTraverse() {
+void loopTraverse({String adjustBy}) {
   var traverseData = readFile('C:/Users/muj/Desktop/MsFiles/loop_traverse.csv');
   var dataSize = traverseData.length;
   var backsightData = [];
@@ -17,10 +17,10 @@ void loopTraverse() {
     distanceData.add(traverseData[i][5]);
     controls.add(traverseData[i][6]);
   }
-  print('backsight data $backsightData');
-  print('foresight data $foresightData');
+  // print('backsight data $backsightData');
+  // print('foresight data $foresightData');
   stationData.removeWhere((element) => element == '');
-  print('station data is $stationData');
+  // print('station data is $stationData');
   stationData.insert(0, stationData.last);
   stationData.add(stationData[1]);
   // initialBearing
@@ -45,6 +45,10 @@ void loopTraverse() {
   });
   // print(includedAngles);
   // print(sum);
+  // adjusted included angles
+  // var adjustedIncludedAngles = adjustIncludedAngles(
+  //     includedAngles: includedAngles, direction: direction);
+  // print('adjusted included angles are $adjustedIncludedAngles');
   // compute bearings
   var unadjustedBearings = computeBearings(
       includedAngles: includedAngles, initialBearing: controlData[1]);
@@ -59,7 +63,7 @@ void loopTraverse() {
   // print('dep and lat are $depLat');
   // adjust dep lat
   var adjustedDepLat = adjustDepLat(
-    adjustmentMethod: 'Bowditch',
+    adjustmentMethod: adjustBy,
     distances: distanceData,
     initialDepLat: depLat,
   );
@@ -68,10 +72,10 @@ void loopTraverse() {
   var finalCoordinates = computeEastingNorthing(
       controls: [num.parse(stationControls[0]), num.parse(stationControls[1])],
       depLat: adjustedDepLat);
-  // print('final coordinates are $finalCoordinates');
-  // finalCoordinates.forEach((element) {
-  //   print(element.toString());
-  // });
+  print('final coordinates are $finalCoordinates');
+  finalCoordinates.forEach((element) {
+    print(element.toString());
+  });
   List<List<dynamic>> output = [];
   output.insert(0, [
     'From',
@@ -79,13 +83,13 @@ void loopTraverse() {
     'Included Angle',
     'Distance',
     'Bearing',
-    'Corr in Bear',
+    'Corr to Bear',
     'Adjusted Bear',
     'Departure',
-    'Corr in Dep',
+    'Corr to Dep',
     'Adjusted Dep',
     'Latitude',
-    'Corr in Lat',
+    'Corr to Lat',
     'Adjusted Lat',
     'Easting',
     'Northing'
@@ -115,5 +119,6 @@ void loopTraverse() {
     }
   } catch (e) {}
   downloadResult(
-      'C:/Users/muj/Desktop/MsFiles/loop_traverse_result.csv', output);
+      'C:/Users/muj/Desktop/MsFiles/loop_traverse_${adjustBy}_result.csv',
+      output);
 }
