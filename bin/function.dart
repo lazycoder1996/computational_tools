@@ -124,9 +124,10 @@ List<List<dynamic>> adjustIncludedAnglesLink(
   var expectedSumAngles = [];
   for (var i = size - 1; i <= size + 1; i++) {
     expectedSumAngles.add(
-        sumAngles - ((finalForwardBearing - initialBackBearing) + (i * 180)));
+        (sumAngles - ((finalForwardBearing - initialBackBearing) + (i * 180)))
+            .abs());
   }
-  var m = minimum(expectedSumAngles.map((e) => e.abs()).toList());
+  var m = minimum(expectedSumAngles);
   var finalM = expectedSumAngles.indexOf(m) + size - 1;
   var expectedSum = (finalForwardBearing - initialBackBearing) + (finalM * 180);
   var error = sumAngles - expectedSum;
@@ -156,7 +157,7 @@ num minimum(List numbers) {
 // adjust included angles
 List<List<dynamic>> adjustIncludedAngles(
     {List<dynamic> includedAngles, String direction}) {
-  List<List<dynamic>> results = [[], []];
+  var results = <List<dynamic>>[[], []];
   var size = includedAngles.length;
   var n = 0;
   var observedAngles = sumItemsInList(includedAngles);
@@ -282,7 +283,9 @@ List<List<dynamic>> adjustDepLat(
       : initialDepLat[0].sublist(1))) {
     sumDep += i;
   }
-  for (var i in distances.sublist(1, distances.length - 1)) {
+  for (var i in (typeOfTraverse != null
+      ? distances
+      : distances.sublist(1, distances.length - 1))) {
     sumDistances += i;
   }
 
@@ -333,28 +336,45 @@ List<List<dynamic>> adjustDepLat(
     // print('sum dist is $sumDistances');
     // print('sum dep is $sumDep');
     // print('sum lat is $sumLat');
-    var n = 1;
+    if (typeOfTraverse == 'Link') {
+      var expectedSumDep =
+          num.parse(checkControls[2]) - num.parse(checkControls[0]);
+      var expectedSumLat =
+          num.parse(checkControls[3]) - num.parse(checkControls[1]);
+      errorInDep = sumDep - expectedSumDep;
+      errorInLat = sumLat - expectedSumLat;
+    }
+
+    var n = typeOfTraverse != null ? 0 : 1;
     var size = distances.length;
-    try {
-      while (n < size - 1) {
-        adjDep.add((distances[n] / sumDistances) * -sumDep);
-        correctedDep.add(adjDep[n] + initialDepLat[0][n]);
-        adjLat.add((distances[n] / sumDistances) * -sumLat);
-        correctedLat.add(adjLat[n] + initialDepLat[1][n]);
-        n++;
-      }
-    } catch (e) {}
-    adjLat.add(0);
-    adjDep.add(0);
-    correctedDep.add(initialDepLat[0].last);
-    correctedLat.add(initialDepLat[1].last);
+    // try {
+    while (typeOfTraverse != null ? (n < size) : (n < size - 1)) {
+      adjDep.add((typeOfTraverse != null ? -errorInDep : -sumDep) *
+          (distances[n] / sumDistances));
+      correctedDep.add(adjDep[n] + initialDepLat[0][n]);
+      adjLat.add((typeOfTraverse != null ? -errorInLat : -sumLat) *
+          ((distances[n] / sumDistances)));
+      correctedLat.add(adjLat[n] + initialDepLat[1][n]);
+      n++;
+    }
+    // } catch (e) {
+    //   print(e.toString());
+    // }
+    if (typeOfTraverse == null) {
+      adjLat.add(0);
+      adjDep.add(0);
+      correctedDep.add(initialDepLat[0].last);
+      correctedLat.add(initialDepLat[1].last);
+    }
   } else {}
 
 // linear misclose and fractional misclose
   var linearMisclose = sqrt(
       pow(typeOfTraverse != null ? errorInDep : sumDep, 2) +
           pow(typeOfTraverse != null ? errorInLat : sumLat, 2));
-  var fractionalMisclose = (sumDistances + distances.first) / linearMisclose;
+  var fractionalMisclose = typeOfTraverse != null
+      ? (sumDistances) / linearMisclose
+      : (sumDistances + distances.first) / linearMisclose;
   var fracMisclose = '1 in ${fractionalMisclose.round()}';
   print('fractional misclose is $fracMisclose');
   print('linear misclose is ${linearMisclose.toStringAsFixed(4)}');
@@ -425,4 +445,78 @@ num sumItems(list) {
     sum += i;
   }
   return sum;
+}
+
+String deg2DMS(myNumber) {
+  String sign;
+  num a = myNumber.abs();
+  var degrees = a.truncate();
+  var b = (a - degrees) * 60;
+  var minutes = b.truncate();
+  var c = b - minutes;
+  var seconds = num.parse((c * 60).toStringAsFixed(2));
+  if (seconds >= 60) {
+    minutes++;
+    seconds = 60 - seconds;
+  }
+  if (minutes >= 60) {
+    degrees++;
+    minutes = 60 - minutes;
+  }
+  if (myNumber.isNegative == true) {
+    sign = '-';
+  } else {
+    sign = '';
+  }
+  var degreesStandard = degrees.toString();
+  var minutesStandard = minutes.toString();
+  var sec = seconds.toString();
+  var endSec = sec.substring(sec.indexOf('.') + 1);
+  var secondsStandard = sec.substring(0, sec.indexOf('.'));
+  if (degreesStandard.length == 1) {
+    degreesStandard = '00' + degreesStandard;
+  } else if (degreesStandard.length == 2) {
+    degreesStandard = '0' + degreesStandard;
+  } else {
+    degreesStandard = degreesStandard;
+  }
+  if (minutesStandard.length == 1) {
+    minutesStandard = '0' + minutesStandard;
+  } else {
+    minutesStandard = minutesStandard;
+  }
+  if (secondsStandard.length == 1) {
+    secondsStandard = '0' + secondsStandard;
+  } else {
+    secondsStandard = secondsStandard;
+  }
+  if (endSec.length == 1) {
+    endSec = endSec + '0';
+  }
+  // else if (endSec.length == 2) {
+  //   endSec = endSec + '00';
+  // } else if (endSec.length == 3) {
+  //   endSec = endSec + '0';
+  // } else {
+  //   endSec = endSec;
+  // }
+  return sign +
+      degreesStandard +
+      ' ' +
+      minutesStandard +
+      ' ' +
+      secondsStandard +
+      '.' +
+      endSec;
+}
+
+num dms2Deg(String dms) {
+  var dmsString = dms.toString();
+  num a = dmsString.indexOf('°');
+  var degrees = num.parse(dmsString.substring(0, a));
+  num b = dmsString.indexOf("'");
+  var minutes = num.parse(dmsString.substring(a + 1, b));
+  var seconds = num.parse(dmsString.substring(b + 1, dmsString.length - 1));
+  var answer = degrees + (minutes / 60) + (seconds / 3600);
+  return answer;
 }
